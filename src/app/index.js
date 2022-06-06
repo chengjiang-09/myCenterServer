@@ -2,6 +2,9 @@ import Koa from 'koa'
 import Cors from '@koa/cors'
 import koaBody from 'koa-body'
 import router from '../router/index.js'
+import jwt from 'koa-jwt'
+import unlessPash from '../config/unlessPath.config.js'
+import { secert } from '../config/jwtSecert.js'
 
 const app = new Koa()
 
@@ -16,6 +19,11 @@ app.use(koaBody({
     }
 }))
 app.use(router.routes())
+app.use(jwt({
+    secert
+}).unless({
+    path:unlessPash
+}))
 app.use(async (ctx, next) => {
     try{
         await next()

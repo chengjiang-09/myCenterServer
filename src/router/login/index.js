@@ -1,9 +1,10 @@
 import Router from '@koa/router'
-import { getCode, codeLogin } from '../../app/login/index.js'
+import { getCode, codeLogin, passwordLogin } from '../../app/login/index.js'
 
 const router  = new Router()
 
-router.get('/mobile/code',getCode)
-router.post('/mobile/login',codeLogin)
+router.get('/email/code',getCode)
+router.post('/email/login',codeLogin)
+router.post('/login',passwordLogin)
 
 export default router
