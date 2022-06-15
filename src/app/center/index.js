@@ -1,4 +1,4 @@
-import { getPoetryMysql, getBlogMysql, sendFootprintMysql, getCommentsListMysql, getCommentsMaxNumMysql } from '../../module/mysql_control/index.js'
+import { getPoetryMysql, getBlogMysql, sendFootprintMysql, getCommentsListMysql, getCommentsMaxNumMysql, sendCommentMysql } from '../../module/mysql_control/index.js'
 
 export const getPoetry = async (ctx, next) => {
     await getPoetryMysql(ctx, next, 1)
@@ -26,5 +26,11 @@ export const getCommentsList = async (ctx, next) => {
 export const getCommentsMaxNum = async (ctx, next) => {
 
     await getCommentsMaxNumMysql(ctx,next)
+
+}
+
+export const sendComment = async (ctx, next) => {
+
+    await sendCommentMysql(ctx, next)
 
 }

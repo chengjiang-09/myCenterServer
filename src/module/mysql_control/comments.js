@@ -12,6 +12,43 @@ const warningFc = (err, db, ctx) => {
 }
 
 
+export const sendComment = (ctx, next) => {
+    return new Promise(resolve => {
+
+        const { masterName, masterID, author, context, date, topID } = ctx.request.body
+
+        const db = getMysqlPool()
+
+        db.getConnection((e,connection) => {
+            if(e){
+                console.log(e.message);
+                db.end()
+            }else {
+                connection.query(`insert into comments(masterName,masterID,author,date,context,topID) values("${masterName}",${masterID},"${author}","${date}","${context}","${topID}")`,(err) => {
+                    if(err){
+                        console.log(err.message);
+                        db.end()
+
+                        ctx.response.body = {
+                            status:0,
+                            msg:"评论发送失败！"
+                        }
+                        resolve()
+                    }else {
+                        ctx.response.body = {
+                            status:1,
+                            msg:"评论发送成功！"
+                        }
+
+                        resolve()
+                    }
+                })
+            }
+        })
+
+    })
+}
+
 export const sendFootprint = (ctx, next) => {
     return new Promise(resolve => {
         const db = getMysqlPool()
@@ -74,7 +111,7 @@ export const getCommentsMaxNum = (ctx, next) => {
                             status: 1,
                             msg: "数据获取成功！",
                             result: {
-                                commentsMaxNum: Math.ceil(data[0]['count(*)'] / 3)
+                                commentsMaxNum: Math.ceil(data[0]['count(*)'] / 2)
                             }
                         }
                         db.end()
@@ -93,7 +130,7 @@ export const getCommentsList = (ctx, next) => {
 
         const { pageNum } = ctx.request.query
 
-        const nums = 3
+        const nums = 2
         const start = (pageNum - 1) * nums
 
         db.getConnection((e, connection) => {
@@ -112,7 +149,7 @@ export const getCommentsList = (ctx, next) => {
                         data.forEach(obj => {
                             queryList.push((() => {
                                 return new Promise(resloveChild => {
-                                    connection.query(`select * from comments where topID=${obj.id} limit 100 offset 0`, (selectErr2, childDta) => {
+                                    connection.query(`select * from comments where topID=${obj.id} order by id desc limit 100 offset 0`, (selectErr2, childDta) => {
                                         if (selectErr2) {
                                             warningFc(selectErr2, db, ctx)
                                             resloveChild()
