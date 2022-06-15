@@ -14,7 +14,7 @@ export const getCode = (ctx, next) => {
 
   try {
     removeVerificationCodeRedis(email)
-    // sendVerificationCode(email, code)
+    sendVerificationCode(email, code)
     setVerificationCodeRedis(email, code)
 
     ctx.response.body = {
@@ -42,7 +42,7 @@ export const codeLogin = async (ctx, next) => {
 
   if (flag) {
     try {
-      insertUserInfoMysql(ctx, email, name, "123456")
+      await insertUserInfoMysql(ctx, email, name, "123456")
 
     } catch (err) {
       console.log(err.message);

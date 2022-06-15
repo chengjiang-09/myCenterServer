@@ -1,5 +1,9 @@
 export default [
     /\/email\/code/,
     /\/email\/login/,
-    /\/login/
+    /\/login/,
+    /\/comments/,
+    /\/poetry/,
+    /\/blog/,
+    /\/commentsMaxNum/
 ]

@@ -1,23 +1,27 @@
 import { getMysqlPool } from '../db/mysql_db.js'
 import jsonwebtoken from 'jsonwebtoken'
-import { secert } from '../../config/jwtSecert.js'
+import { secret } from '../../config/jwtSecert.js'
 
 export const insertUserInfo = (ctx, email, name, password) => {
-    const db = getMysqlPool()
+    return new Promise((resolve) => {
+        const db = getMysqlPool()
 
-    db.getConnection((err, connection) => {
-        if (err) {
-            console.log("数据库连接失败！");
-            db.end()
-        } else {
-            console.log(email);
-            connection.query(`insert into userinfo(email,name,password) values("${email}","${name}","${password}")`, (inserErr) => {
-                if (inserErr) {
-                    console.log(inserErr.message);
+        db.getConnection((err, connection) => {
+            if (err) {
+                console.log("数据库连接失败！");
+                db.end()
+            } else {
+                console.log(email);
+                connection.query(`insert into userinfo(email,name,password) values("${email}","${name}","${password}")`, (inserErr) => {
+                    if (inserErr) {
+                        console.log(inserErr.message);
+                        db.end()
+                    }
                     db.end()
-                }
-            })
-        }
+                    resolve()
+                })
+            }
+        })
     })
 }
 
@@ -51,8 +55,7 @@ export const getUserInfo = (ctx, next, email, password) => {
                                                 name: data[0].name,
                                                 id: data[0].id,
                                                 email: data[0].email,
-                                                exp: Math.floor(Date.now() / 1000) + (60 * 60)
-                                            }, secert),
+                                            }, secret, {expiresIn: '1h'}),
                                         }
                                     })
                                 } else {
@@ -74,8 +77,7 @@ export const getUserInfo = (ctx, next, email, password) => {
                                             name: data[0].name,
                                             id: data[0].id,
                                             email: data[0].email,
-                                            exp: Math.floor(Date.now() / 1000) + (60 * 60)
-                                        }, secert),
+                                        }, secret, {expiresIn: '1h'}),
                                     }
                                 })
                             }
@@ -100,7 +102,7 @@ export const tokenToGetUserinfo = (ctx, next) => {
         const db = getMysqlPool()
 
         try {
-            const { name, email, id, exp, iat } = jsonwebtoken.decode(token.split(' ')[1], secert)
+            const { name, email, id, exp, iat } = jsonwebtoken.decode(token.split(' ')[1], secret)
             db.getConnection((err, connection) => {
                 if (err) {
                     console.log("数据库连接失败！");
@@ -124,9 +126,8 @@ export const tokenToGetUserinfo = (ctx, next) => {
                                             token: jsonwebtoken.sign({
                                                 name: data[0].name,
                                                 id: data[0].id,
-                                                email: data[0].email,
-                                                exp: Math.floor(Date.now() / 1000) + (60 * 60)
-                                            }, secert),
+                                                email: data[0].email
+                                            }, secret, {expiresIn: '1h'}),
                                         }
                                     })
                                 } else {

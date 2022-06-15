@@ -1,1 +1,1 @@
-export const secert = "chengjiang_JWT"
+export const secret = "chengjiang_JWT"

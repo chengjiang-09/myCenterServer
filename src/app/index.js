@@ -4,7 +4,7 @@ import koaBody from 'koa-body'
 import router from '../router/index.js'
 import jwt from 'koa-jwt'
 import unlessPash from '../config/unlessPath.config.js'
-import { secert } from '../config/jwtSecert.js'
+import { secret } from '../config/jwtSecert.js'
 
 const app = new Koa()
 
@@ -18,9 +18,8 @@ app.use(koaBody({
         // uploadDir
     }
 }))
-app.use(router.routes())
 app.use(jwt({
-    secert
+    secret
 }).unless({
     path:unlessPash
 }))
@@ -38,5 +37,5 @@ app.use(async (ctx, next) => {
         }
     }
 })
-
+app.use(router.routes())
 export default app
