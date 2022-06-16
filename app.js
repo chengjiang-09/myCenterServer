@@ -1,17 +1,11 @@
 //http2协议
-import http2 from 'http2'
-import path from 'path'
-import fs from 'fs'
-import koaStatic from 'koa-static'
+import http from 'http'
 import cluster from 'cluster'
 import os from 'os'
 
 import koaApp from './src/app/index.js'
 
 const cpuNums = os.cpus().length
-const certBase = path.join(path.resolve(), ".\\src\\public\\ssl\\7681157_azhmau.top_other")
-
-koaApp.use(koaStatic(path.join(path.resolve(),'.\\src\\public\\static')))
 
 if(cluster.isPrimary){
     for(let i = 0,len = cpuNums;i<len;i++){
@@ -26,14 +20,12 @@ if(cluster.isPrimary){
         cluster.fork()
     })
 }else{
-    const http2Server = http2.createSecureServer({
-        key:fs.readFileSync(path.join(certBase,".\\7681157_azhmau.top.key")),
-        cert:fs.readFileSync(path.join(certBase,".\\7681157_azhmau.top.pem")),
+    const httpServer = http.createServer({
         allowHTTP1: true
     },koaApp.callback())
 
-    http2Server.listen(8000,() => {
-        console.log(`Server running at https://localhost:8000`);
+    httpServer.listen(8000,() => {
+        console.log(`Server running at http://localhost:8000`);
     })
 }
 
